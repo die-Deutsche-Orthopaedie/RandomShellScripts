@@ -5,9 +5,10 @@
 # here we fockin' go
 baseurl="" # your oneindex website's root
 absolutepath=`pwd`
+gdrive="" # your google drive root in rclone
 mkdir "$absolutepath$1"
 
-function chie() #aug: /
+function chie_display() # aug: /
 {
     echo "$baseurl$1/"
     for list in `curl --globoff "$baseurl$1/" | grep "<li class=.* data-sort" | sed 's/li class="//g' | sed 's/" data-sort data-sort-name="/?/g' | sed 's/" data-sort-date="/?/g' | sed 's/" data-sort-size="/?/g' | sed 's/">//g' | sed 's/ /|/g'`; 
@@ -28,14 +29,14 @@ function chie() #aug: /
             f="$1/$filename"
             echo
             echo -e "\t\e[36mstart of $f\e[0m"
-            chie "$1/$filename" 
+            chie_display "$1/$filename" 
             echo -e "\t\e[36mend of $f\e[0m"
             echo
         fi
     done
 }
 
-function chie() #aug: /
+function chie() # aug: /
 {
     echo "# current dir: $baseurl$1/"
     for list in `curl --globoff "$baseurl$1/" | grep "<li class=.* data-sort" | sed 's/li class="//g' | sed 's/" data-sort data-sort-name="/?/g' | sed 's/" data-sort-date="/?/g' | sed 's/" data-sort-size="/?/g' | sed 's/">//g' | sed 's/ /|/g'`; 
@@ -61,6 +62,8 @@ function chie() #aug: /
             cd ..
             echo -e "\e[36mtouch -d @$modtime \"$f\"\e[0m"
             touch -d @$modtime "$f"
+            echo -e "\e[36mrclone --low-level-retries=666 -vv --checksum --drive-chunk-size=128M --onedrive-chunk-size=100M move \"$absolutepath$1/$f\" \"$gdrive$1/$f\"\e[0m"
+            rclone --low-level-retries=666 -vv --checksum --drive-chunk-size=128M --onedrive-chunk-size=100M move "$absolutepath$1/$f" "$gdrive$1/$f"
             # echo
         else
             # echo $filename
