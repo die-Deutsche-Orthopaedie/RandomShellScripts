@@ -68,7 +68,12 @@ function chie() #aug: /
             # echo $size
             # echo
             echo -e "\e[36maria2c -s 128 -x 128 \"$baseurl$1/$filename\"\e[0m"
-            aria2c -s 128 -x 128 "$baseurl$1/$filename"
+            if [ -f "$filename" ] && [ ! -f "$filename.aria2" ]
+            then
+                echo -e "\e[36malready downloaded\e[0m"
+            else
+                aria2c -s 128 -x 128 "$baseurl$1/$filename"
+            fi
             echo -e "\e[36mtouch -d @$modtime \"$filename\"\e[0m"
             touch -d @$modtime "$filename"
         fi
