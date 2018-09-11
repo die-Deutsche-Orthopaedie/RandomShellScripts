@@ -2,6 +2,7 @@
 # copyrekt die deutsche Orthopädiespezialist 2018
 # a MUCH quicker onedrive downloader than rclone
 # usin' oneindex (https://github.com/donwa/oneindex) website's information to get directory structure, download files usin' aria2c (need a thread hacked version), and set modified time right
+# and reupload every folder to google drive and delete it after finish downloadin' them
 # here we fockin' go
 baseurl="" # your oneindex website's root
 absolutepath=`pwd`
@@ -49,7 +50,7 @@ function chie() # aug: /
         # echo $delta
         if [ "$delta" != "<mdui-list-item file mdui-ripple" ]
         then
-            f="$filename"
+            local f="$filename"
             # echo
             # echo -e "\t\e[36mstart of $f\e[0m"
             echo -e "\e[36mmkdir \"$absolutepath$1/$f\"\e[0m"
