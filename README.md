@@ -12,4 +12,4 @@ it's much better to deal with large files (>100MB) than smaller ones, you can le
 
 Requirements: Oneindex (https://github.com/donwa/oneindex) installed, and set your $baseurl to the home page of your Oneindex site, and set theme to "material"; better clear cache and set cache refresh time shorter than short hair of short haired cutie with glasses
 
-需求：安装Oneindex（https://github.com/donwa/oneindex），将$baseurl设成Oneindex站的主页，并将主题设成“material”；最好清一遍缓存，并将缓存失效时间设置得比短发眼镜妹的短发还要短
+需求：安装Oneindex (https://github.com/donwa/oneindex) ，将$baseurl设成Oneindex站的主页，并将主题设成“material”；最好清一遍缓存，并将缓存失效时间设置得比短发眼镜妹的短发还要短
