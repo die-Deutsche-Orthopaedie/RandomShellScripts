@@ -1,7 +1,7 @@
 #!/bin/bash
 # copyrekt die deutsche Orthopädiespezialist 2018
-# a MUCH quicker onedrive downloader than rclone
-# usin' oneindex (https://github.com/donwa/oneindex) website's information to get directory structure, download files usin' aria2c (need a thread hacked version), and set modified time right
+# a MUCH faster onedrive downloader and reuploader than rclone
+# usin' oneindex (https://github.com/donwa/oneindex) website's information to get directory structure, download files usin' aria2 (need a thread hacked version), and set modified time right
 # and reupload every folder to google drive and delete it after finish downloadin' them
 # here we fockin' go
 baseurl="" # your oneindex website's root
@@ -9,6 +9,7 @@ absolutepath=`pwd`
 gdrive="" # your google drive root in rclone
 sizelimit=104857600
 # sizelimit=9
+filesnum=50
 
 mkdir "$absolutepath$1"
 cd "$absolutepath$1"
@@ -41,6 +42,7 @@ function chie_display() {
 }
 
 function chie() {
+    total=0
     echo "# current dir: $baseurl$1/"
     for list in `curl --globoff "$baseurl$1/" | grep "<li class=.* data-sort" | sed 's/li class="//g' | sed 's/" data-sort data-sort-name="/?/g' | sed 's/" data-sort-date="/?/g' | sed 's/" data-sort-size="/?/g' | sed 's/">//g' | sed 's/ /|/g'`; 
     do 
@@ -85,12 +87,19 @@ function chie() {
                 aria2c -s 128 -x 128 "$baseurl$1/$filename"
                 echo -e "\e[36mtouch -d @$modtime \"$filename\"\e[0m"
                 touch -d @$modtime "$filename"
+                total=$[ $total + 1 ]
+                if [ $[ $total % $filesnum ] = 0 ]
+                then
+                    echo -e "\e[36m rclone --low-level-retries=666 -vv --checksum --drive-chunk-size=128M --onedrive-chunk-size=100M move \"$absolutepath$1\" \"$gdrive$1\" \e[0m"
+                    rclone --low-level-retries=666 -vv --checksum --drive-chunk-size=128M --onedrive-chunk-size=100M move "$absolutepath$1" "$gdrive$1"
+                fi
             fi
         fi
     done
 }
 
 function naoto() {
+    total=0
     echo "# current dir: $baseurl$1/"
     for list in `curl --globoff "$baseurl$1/" | grep "<li class=.* data-sort" | sed 's/li class="//g' | sed 's/" data-sort data-sort-name="/?/g' | sed 's/" data-sort-date="/?/g' | sed 's/" data-sort-size="/?/g' | sed 's/">//g' | sed 's/ /|/g'`; 
     do 
@@ -117,6 +126,12 @@ function naoto() {
                 aria2c -s 128 -x 128 "$baseurl$1/$filename"
                 echo -e "\e[36mtouch -d @$modtime \"$filename\"\e[0m"
                 touch -d @$modtime "$filename"
+                total=$[ $total + 1 ]
+                if [ $[ $total % $filesnum ] = 0 ]
+                then
+                    echo -e "\e[36m rclone --low-level-retries=666 -vv --checksum --drive-chunk-size=128M --onedrive-chunk-size=100M move \"$absolutepath$1\" \"$gdrive$1\" \e[0m"
+                    rclone --low-level-retries=666 -vv --checksum --drive-chunk-size=128M --onedrive-chunk-size=100M move "$absolutepath$1" "$gdrive$1"
+                fi
             fi
         fi
     done
@@ -129,4 +144,5 @@ else
     chie "$1"
 fi
 
+echo -e "\e[36m rclone --low-level-retries=666 -vv --checksum --drive-chunk-size=128M --onedrive-chunk-size=100M move \"$absolutepath$1\" \"$gdrive$1\" \e[0m"
 rclone --low-level-retries=666 -vv --checksum --drive-chunk-size=128M --onedrive-chunk-size=100M move "$absolutepath$1" "$gdrive$1"
